@@ -1,0 +1,12 @@
+# Site settings
+title: Jillian Rosile
+email: jillian.rosile@gmail.com
+description: >
+  A place to collect and publish my thoughts. Mostly Ruby and Rails thoughts.
+baseurl: ""
+url: "http://jillianrosile.github.io" # the base hostname & protocol for your site
+twitter_username: jillianrosile
+github_username:  jillianrosile
+
+# Build settings
+markdown: kramdown
