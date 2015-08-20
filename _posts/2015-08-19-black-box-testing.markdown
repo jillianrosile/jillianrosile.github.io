@@ -97,6 +97,17 @@ include Capybara::DSL
     end
   end
 
+  def displayed?(wait_time_seconds = Capybara.default_wait_time)
+    fail NoUrlMatcherForPage if url_matcher.nil?
+    start_time = Time.now
+    loop do
+      return true if page.current_url.chomp('/') =~ url_matcher
+      break unless Time.now - start_time <= wait_time_seconds
+      sleep(0.05)
+    end
+    false
+  end
+
   def flash_error_css
     'div.flash.error'
   end
@@ -254,6 +265,8 @@ end
 {% endhighlight %}
 Clear and concise testing!
 
+If you want a jump start on getting this set up, check out the [gamera][gamera] gem authored by me and some colleagues. It includes a basic `Page` class, the `Form` and `Table` mentioned above, and a few other features.
+
 Further reading and references
 ==============================
 
@@ -269,10 +282,10 @@ Notes
 [^1]: A note on getting the most out of Capybara: see the `has_flash_error?` and `has_no_flash_error?` methods in the code block? At first glance, you might wonder why both are necessary. It has to do with the way that Capybara waits for elements to appear on a page. `has_css?` will return `true` as soon as the specified CSS appears, but it will only return `false` after waiting the default wait time configured in Capybara. `has_no_css?`, on the other hand, will return `true` as soon as the CSS is not there, and it will only return `false` after waiting and still not having the CSS appear. If you want to assert that something is _not_ on the page, you should always use `has_no_css?`, or your test will always wait the default wait time before passing.
 
 [capybara]: https://github.com/jnicklas/capybara
-[fowler]:   http://martinfowler.com/bliki/PageObject.html
+[fowler]: http://martinfowler.com/bliki/PageObject.html
 [eddie slides]: https://speakerdeck.com/ecbypi/ambitious-capybara
 [eddie video]: http://confreaks.tv/videos/railsconf2015-ambitious-capybara
 [ferris]: https://robots.thoughtbot.com/write-reliable-asynchronous-integration-tests-with-capybara
 [jnicklas]: http://www.elabs.se/blog/51-simple-tricks-to-clean-up-your-capybara-tests
-
+[gamera]: https://github.com/gamera-team/gamera
 
