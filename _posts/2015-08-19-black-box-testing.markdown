@@ -7,6 +7,8 @@ categories: rspec capybara ruby rails
 
 [Capybara][capybara] is a fantastic tool for testing user interactions with our applications. All too often, though, I see tests that use only Capybara's basic features and get littered with confusing and repetitive code. Instead, we can use the page object pattern and Capybara's more advanced features to write readable and maintainable tests. This post will walk you through designing a black box testing framework for your web application that turns a website into a clean, readable Ruby API.
 
+Note: I presented this topic at Rocky Mountain Ruby in September 2015. You can get the PDF of my slides [here]({{ site.url }}/assets/RMR_Presentation.pdf).
+
 Page Object Pattern
 -------------------
 Let's say you have a simple page with a short registration form and would like to write some tests for it. Here's the HTML:
@@ -26,7 +28,7 @@ Let's say you have a simple page with a short registration form and would like t
 </html>
 {% endhighlight %}
 
-Your first stab at a test might include this:
+Your first stab at a test with RSpec and Capybara might include this:
 {% highlight ruby %}
 scenario 'registering a user' do
   visit '/register'
@@ -66,6 +68,8 @@ Now your spec looks like:
 scenario 'registering a user' do
   registration_page = RegistrationPage.new
   registration_page.register(email: 'example@example.com', password: 'password')
+
+  expect(page).to have_no_css 'div.flash.error'
 end
 {% endhighlight %}
 
@@ -82,7 +86,8 @@ Basic Page class for all application pages
 Our solution for the first case was to make a base page class for things that are shared between ALL pages in our application. This includes a `visit` method and logic around the CSS that we use for flash messages and errors throughout the application. You could also include methods to access the header and footer on the page. Here's a sketch of what ours looks like[^1]:
 {% highlight ruby %}
 class Page
-include Capybara::DSL
+  include Capybara::DSL
+
   attr_reader :url, :url_matcher
 
   def initialize(url, url_matcher = nil)
